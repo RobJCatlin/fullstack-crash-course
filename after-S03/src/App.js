@@ -54,7 +54,11 @@ function App() {
 
   return (
     <>
-      {/* HEADER */}
+      <Header
+        appTitle={appTitle}
+        showForm={showForm}
+        setShowForm={setShowForm}
+      />
 
       {showForm ? <NewFactForm /> : null}
 
@@ -66,21 +70,22 @@ function App() {
   );
 }
 
-function Header() {
-  return (  <header className="header">
-    <div className="logo">
-      <img src="logo.png" height="68" width="68" alt="Today I Learned Logo" />
-      <h1>{appTitle}</h1>
-    </div>
+function Header({ appTitle, showForm, setShowForm }) {
+  return (
+    <header className="header">
+      <div className="logo">
+        <img src="logo.png" height="68" width="68" alt="Today I Learned Logo" />
+        <h1>{appTitle.appTitle}</h1>
+      </div>
 
-    <button
-      className="btn btn-large btn-open"
-      onClick={() => setShowForm((show) => !show)}
-    >
-      Share a fact
-    </button>
-  </header>;
-  )
+      <button
+        className="btn btn-large btn-open"
+        onClick={() => setShowForm((show) => !show)}
+      >
+        Share a fact
+      </button>
+    </header>
+  );
 }
 
 function NewFactForm() {
