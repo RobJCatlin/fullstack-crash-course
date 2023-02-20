@@ -36,7 +36,7 @@ const initialFacts = [
 ];
 
 function Counter() {
-  let [count, setCount] = useState(0);
+  const [count, setCount] = useState(0);
   return (
     <div>
       <span style={{ fontSize: "40px" }}>{count}</span>
@@ -50,15 +50,9 @@ function Counter() {
 function App() {
   const [showForm, setShowForm] = useState(false);
 
-  const appTitle = "Today I Learned";
-
   return (
     <>
-      <Header
-        appTitle={appTitle}
-        showForm={showForm}
-        setShowForm={setShowForm}
-      />
+      <Header showForm={showForm} setShowForm={setShowForm} />
 
       {showForm ? <NewFactForm /> : null}
 
@@ -70,12 +64,13 @@ function App() {
   );
 }
 
-function Header({ appTitle, showForm, setShowForm }) {
+function Header({ showForm, setShowForm }) {
+  const appTitle = "Today I Learned";
   return (
     <header className="header">
       <div className="logo">
         <img src="logo.png" height="68" width="68" alt="Today I Learned Logo" />
-        <h1>{appTitle.appTitle}</h1>
+        <h1>{appTitle}</h1>
       </div>
 
       <button
