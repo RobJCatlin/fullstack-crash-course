@@ -49,15 +49,16 @@ function Counter() {
 
 function App() {
   const [showForm, setShowForm] = useState(false);
+  const [facts, setFacts] = useState(initialFacts);
 
   return (
     <>
       <Header showForm={showForm} setShowForm={setShowForm} />
-      {showForm ? <NewFactForm /> : null}
+      {showForm ? <NewFactForm setFacts={setFacts} /> : null}
 
       <main className="main">
         <CategoryFilter />
-        <FactList />
+        <FactList facts={facts} />
       </main>
     </>
   );
@@ -103,7 +104,7 @@ function isValidHttpUrl(string) {
   return url.protocol === "http:" || url.protocol === "https:";
 }
 
-function NewFactForm() {
+function NewFactForm({ setFacts }) {
   const [text, setText] = useState("");
   const [source, setSource] = useState("");
   const [category, setCategory] = useState("");
@@ -125,7 +126,7 @@ function NewFactForm() {
       votesInteresting: 0,
       votesMindblowing: 0,
       votesFalse: 0,
-      createdIn: new Date().getCurrentYear(),
+      createdIn: new Date().getFullYear(),
     };
     // 4. add the new fact to the UI: add the fact to state
 
@@ -186,9 +187,7 @@ function CategoryFilter() {
   );
 }
 
-function FactList() {
-  const facts = initialFacts;
-
+function FactList({ facts }) {
   return (
     <section>
       <ul className="facts-list">
