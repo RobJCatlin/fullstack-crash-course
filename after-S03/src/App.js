@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import supabase from "./supabase";
+
 import "./style.css";
 
 // const initialFacts = [
@@ -142,7 +143,8 @@ function isValidHttpUrl(string) {
 
 function NewFactForm({ setFacts, setShowForm }) {
   const [text, setText] = useState("");
-  const [source, setSource] = useState("https://www.example.com");
+  // Fixed in a video text overlay
+  const [source, setSource] = useState("");
   const [category, setCategory] = useState("");
   const [isUploading, setIsUploading] = useState(false);
   const textLength = text.length;
@@ -151,38 +153,39 @@ function NewFactForm({ setFacts, setShowForm }) {
     // 1. prevent browser reload
     e.preventDefault();
     console.log(text, source, category);
-    // 2. check if data is valid?
-    if (text && isValidHttpUrl(source) && category && text <= 200) {
+
+    // 2. Check if data is valid. If so, create a new fact
+    if (text && isValidHttpUrl(source) && category && textLength <= 200) {
+      // 3. Create a new fact object
+      // const newFact = {
+      //   id: Math.round(Math.random() * 10000000),
+      //   text,
+      //   source,
+      //   category,
+      //   votesInteresting: 0,
+      //   votesMindblowing: 0,
+      //   votesFalse: 0,
+      //   createdIn: new Date().getFullYear(),
+      // };
+
+      // 3. upload fact to supabase and recieve the new fact object
+      setIsUploading(true);
+      const { data: newFact, error } = await supabase
+        .from("facts")
+        .insert([{ text, source, category }])
+        .select();
+      setIsUploading(false);
+
+      // 4. add the new fact to the UI: add the fact to state
+      if (!error) setFacts((facts) => [newFact[0], ...facts]);
+
+      // 5. reset input fields
+      setText("");
+      setSource("");
+      setCategory("");
+      // 6. close form
+      setShowForm(false);
     }
-    // 3. create new fact object (old)
-    // const newFact = {
-    //   id: Math.round(Math.random() * 100000000),
-    //   text,
-    //   source,
-    //   category,
-    //   votesInteresting: 0,
-    //   votesMindblowing: 0,
-    //   votesFalse: 0,
-    //   createdIn: new Date().getFullYear(),
-    // };
-
-    // 3. upload fact to supabase and recieve the new fact object
-    setIsUploading(true);
-    const { data: newFact, error } = await supabase
-      .from("facts")
-      .insert([{ text, source, category }])
-      .select();
-    setIsUploading(false);
-
-    // 4. add the new fact to the UI: add the fact to state
-    if (!error) setFacts((facts) => [newFact[0], ...facts]);
-
-    // 5. reset input fields
-    setText("");
-    setSource("");
-    setCategory("");
-    // 6. close form
-    // setShowForm(false);
   }
 
   return (
@@ -198,7 +201,6 @@ function NewFactForm({ setFacts, setShowForm }) {
       <input
         type="text"
         placeholder="Trustworthy source..."
-        value={source}
         onChange={(e) => setSource(e.target.value)}
         disabled={isUploading}
       />
@@ -210,7 +212,7 @@ function NewFactForm({ setFacts, setShowForm }) {
         <option value="">Choose category:</option>
         {CATEGORIES.map((cat) => (
           <option key={cat.name} value={cat.name}>
-            {cat.name.toLocaleUpperCase()}
+            {cat.name.toUpperCase()}
           </option>
         ))}
       </select>
@@ -274,7 +276,7 @@ function FactList({ facts, setFacts }) {
 function Fact({ fact, setFacts }) {
   const [isUpdating, setIsUpdating] = useState(false);
 
-  async function HandleVote(columnName) {
+  async function handleVote(columnName) {
     setIsUpdating(true);
     const { data: updatedFact, error } = await supabase
       .from("facts")
@@ -283,7 +285,7 @@ function Fact({ fact, setFacts }) {
       .select();
 
     setIsUpdating(false);
-    // console.log(updatedFact);
+
     if (!error)
       setFacts((facts) =>
         facts.map((f) => (f.id === fact.id ? updatedFact[0] : f))
@@ -314,18 +316,18 @@ function Fact({ fact, setFacts }) {
       </span>
       <div className="vote-buttons">
         <button
-          onClick={() => HandleVote("votesInteresting")}
+          onClick={() => handleVote("votesInteresting")}
           disabled={isUpdating}
         >
           👍 {fact.votesInteresting}
         </button>
         <button
-          onClick={() => HandleVote("votesMindblowing")}
+          onClick={() => handleVote("votesMindBlowing")}
           disabled={isUpdating}
         >
-          🤯 {fact.votesMindblowing}
+          🤯 {fact.votesMindBlowing}
         </button>
-        <button onClick={() => HandleVote("votesFalse")} disabled={isUpdating}>
+        <button onClick={() => handleVote("votesFalse")} disabled={isUpdating}>
           ⛔️ {fact.votesFalse}
         </button>
       </div>
