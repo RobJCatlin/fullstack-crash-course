@@ -54,11 +54,11 @@ section {
   padding-bottom: 40px;
 }
 
-@media (max-width: 900px) {
+/* @media (max-width: 900px) {
   .main {
     grid-template-columns: 1fr;
   }
-}
+} */
 
 /* ELEMENTS */
 
@@ -257,6 +257,14 @@ ul {
 }
 
 @media (max-width: 600px) {
+  body {
+    padding: 12px;
+  }
+
+  .main {
+    gap: 12px;
+  }
+
   #root {
     padding: 24px;
   }
@@ -272,5 +280,6 @@ ul {
 
   .fact {
     padding: 12px 16px;
+    border: 2px solid whitesmoke;
   }
 }
